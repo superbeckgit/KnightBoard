@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 r"""
-Knight board program:
-    validates knight moves
-    finds shortest path from start to end
-    finds longest path from start to end
-    accepts board layouts with penalty terrain
+GamePiece classes for KnightBoard project
+    determines valid moves
+    determines paths between start and end locations (min, max, first)
+
+    Knight class
 
 Written by Matt Beck Sept 2015
 
@@ -40,38 +40,6 @@ Level 4: Now repeat the Level 3 task for this 32x32 board.  Also, modify
         4) T[eleport] squares instantly move you from one T to the other in
             the same move
         5) L[ava] squares count as five moves when a piece lands there
-    . . . . . . . . B . . . L L L . . . . . . . . . . . . . . . . .
-    . . . . . . . . B . . . L L L . . . . . . . . . . . . . . . . .
-    . . . . . . . . B . . . L L L . . . L L L . . . . . . . . . . .
-    . . . . . . . . B . . . L L L . . L L L . . . R R . . . . . . .
-    . . . . . . . . B . . . L L L L L L L L . . . R R . . . . . . .
-    . . . . . . . . B . . . L L L L L L . . . . . . . . . . . . . .
-    . . . . . . . . B . . . . . . . . . . . . R R . . . . . . . . .
-    . . . . . . . . B B . . . . . . . . . . . R R . . . . . . . . .
-    . . . . . . . . W B B . . . . . . . . . . . . . . . . . . . . .
-    . . . R R . . . W W B B B B B B B B B B . . . . . . . . . . . .
-    . . . R R . . . W W . . . . . . . . . B . . . . . . . . . . . .
-    . . . . . . . . W W . . . . . . . . . B . . . . . . T . . . . .
-    . . . W W W W W W W . . . . . . . . . B . . . . . . . . . . . .
-    . . . W W W W W W W . . . . . . . . . B . . R R . . . . . . . .
-    . . . W W . . . . . . . . . . B B B B B . . R R . W W W W W W W
-    . . . W W . . . . . . . . . . B . . . . . . . . . W . . . . . .
-    W W W W . . . . . . . . . . . B . . . W W W W W W W . . . . . .
-    . . . W W W W W W W . . . . . B . . . . . . . . . . . . B B B B
-    . . . W W W W W W W . . . . . B B B . . . . . . . . . . B . . .
-    . . . W W W W W W W . . . . . . . B W W W W W W B B B B B . . .
-    . . . W W W W W W W . . . . . . . B W W W W W W B . . . . . . .
-    . . . . . . . . . . . B B B . . . . . . . . . . B B . . . . . .
-    . . . . . R R . . . . B . . . . . . . . . . . . . B . . . . . .
-    . . . . . R R . . . . B . . . . . . . . . . . . . B . T . . . .
-    . . . . . . . . . . . B . . . . . R R . . . . . . B . . . . . .
-    . . . . . . . . . . . B . . . . . R R . . . . . . . . . . . . .
-    . . . . . . . . . . . B . . . . . . . . . . R R . . . . . . . .
-    . . . . . . . . . . . B . . . . . . . . . . R R . . . . . . . .
-    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  # The last four rows originally missing
-    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 Level 5 [HARD]: Compute the longest sequence of moves to complete Level 3 without
     visiting the same square twice.  Use the 32x32 board.
 """
@@ -97,98 +65,30 @@ SMALL_BOARD_CHAR = r"""
 . . . . . . . .
 . . . . . . . .
 """
-LARGE_BOARD_CHAR = r"""
-. . . . . . . . B . . . L L L . . . . . . . . . . . . . . . . .
-. . . . . . . . B . . . L L L . . . . . . . . . . . . . . . . .
-. . . . . . . . B . . . L L L . . . L L L . . . . . . . . . . .
-. . . . . . . . B . . . L L L . . L L L . . . R R . . . . . . .
-. . . . . . . . B . . . L L L L L L L L . . . R R . . . . . . .
-. . . . . . . . B . . . L L L L L L . . . . . . . . . . . . . .
-. . . . . . . . B . . . . . . . . . . . . R R . . . . . . . . .
-. . . . . . . . B B . . . . . . . . . . . R R . . . . . . . . .
-. . . . . . . . W B B . . . . . . . . . . . . . . . . . . . . .
-. . . R R . . . W W B B B B B B B B B B . . . . . . . . . . . .
-. . . R R . . . W W . . . . . . . . . B . . . . . . . . . . . .
-. . . . . . . . W W . . . . . . . . . B . . . . . . T . . . . .
-. . . W W W W W W W . . . . . . . . . B . . . . . . . . . . . .
-. . . W W W W W W W . . . . . . . . . B . . R R . . . . . . . .
-. . . W W . . . . . . . . . . B B B B B . . R R . W W W W W W W
-. . . W W . . . . . . . . . . B . . . . . . . . . W . . . . . .
-W W W W . . . . . . . . . . . B . . . W W W W W W W . . . . . .
-. . . W W W W W W W . . . . . B . . . . . . . . . . . . B B B B
-. . . W W W W W W W . . . . . B B B . . . . . . . . . . B . . .
-. . . W W W W W W W . . . . . . . B W W W W W W B B B B B . . .
-. . . W W W W W W W . . . . . . . B W W W W W W B . . . . . . .
-. . . . . . . . . . . B B B . . . . . . . . . . B B . . . . . .
-. . . . . R R . . . . B . . . . . . . . . . . . . B . . . . . .
-. . . . . R R . . . . B . . . . . . . . . . . . . B . T . . . .
-. . . . . . . . . . . B . . . . . R R . . . . . . B . . . . . .
-. . . . . . . . . . . B . . . . . R R . . . . . . . . . . . . .
-. . . . . . . . . . . B . . . . . . . . . . R R . . . . . . . .
-. . . . . . . . . . . B . . . . . . . . . . R R . . . . . . . .
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-"""
-
 
 
 #%% Class definitions
-class Board():
-    r""" Board class with map and display functions """
+class GamePiece():
+    r""" GamePiece class """
 
-    def __init__(self, layout):
+    def __init__(self):
         r"""
-        Initialize board layout
-
-        Paremeters
-        ----------
-        layout : (A,B) ndarray
-
-
+        Initialize gamepiece on the board? TBD
+        Specify valid moves list? TBD
         """
-        # split into rows
-        lines = layout.split('\n')
-        # remove empty rows
-        lines = [thisline for thisline in lines if thisline]
-        # preallocate map np array
-        self.nRows = len(lines)
-        self.nCols = len(lines[0].split())
-        self.map = np.zeros((self.nRows,self.nCols),dtype=int)
-        # fill the map, x is vertical (down), y is horizontal (right)
-        for x, thisline in enumerate(lines):
-            for y, thischar in enumerate(thisline.split()):
-                self.map[x,y] = CHAR_DICT[thischar]
+        self.valid_moves = {}
 
-    def display(self):
-        r""" Prints the map to the command prompt
 
-        Examples
-        --------
-        test with the small board layout
-        >>> myboard = Board(SMALL_BOARD_CHAR)
-        >>> myboard.display()
-        . . . . . . . .
-        . . . . . . . .
-        . S . . . . . .
-        . . . . . . . .
-        . . . . . E . .
-        . . . . . . . .
-        . . . . . . . .
-        . . . . . . . .
 
-        """
-        for row in self.map:
-            for ix, each in enumerate(row):
-                # add pad space character except on last character
-                if ix != len(row)-1:
-                    pad = ' '
-                else:
-                    pad = ''
-                print(VALU_DICT[each] + pad, end='')
-            # finished the line, print line return
-            print('')
+    def validate_move(self):
+        r""" Check if passed in move sequence is valid """
+        pass
+
+
+class Knight(GamePiece):
+    r""" Knight piece class """
+    def __init__(self):
+        self.valid_moves = {0:np.array((2, 1), dtype=int)}
 
 
 if __name__ == '__main__':

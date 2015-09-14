@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 r"""
-Knight board program:
-    validates knight moves
-    finds shortest path from start to end
-    finds longest path from start to end
-    accepts board layouts with penalty terrain
+Game board class for KnightBoard project
+    builds a board based on string layout
+    displays board in command prompt
 
 Written by Matt Beck Sept 2015
 
@@ -86,7 +84,7 @@ import numpy as np
 
 #%% GLOBALS
 CHAR_DICT = {'.':0, 'S':1, 'E':2, 'K':3, 'W':4, 'R':5, 'B':6, 'T':7, 'L':8, 'x': 9}
-VALU_DICT = {value:key for (key,value) in CHAR_DICT.items()}
+VALU_DICT = {value:key for (key, value) in CHAR_DICT.items()}
 SMALL_BOARD_CHAR = r"""
 . . . . . . . .
 . . . . . . . .
@@ -146,24 +144,30 @@ class Board():
         ----------
         layout : (A,B) ndarray
 
+        Attributes
+        ----------
+        map   : (M x N) numpy array of integers denoting space type
+        nCols : int, number of columns in the game board
+        nRows : int, number of rows in the game board
+
         Examples
         --------
         test with the small board layout
         >>> myboard = Board(SMALL_BOARD_CHAR)
 
         """
-        # split into rows
+        # split layout into rows
         lines = layout.strip().split('\n')
         # remove empty rows
         lines = [thisline for thisline in lines if thisline]
-        # preallocate map np array
+        # determine size and preallocate map np array
         self.nRows = len(lines)
         self.nCols = len(lines[0].split())
-        self.map = np.zeros((self.nRows,self.nCols),dtype=int)
+        self.map   = np.zeros((self.nRows, self.nCols), dtype=int)
         # fill the map, x is vertical (down), y is horizontal (right)
         for x, thisline in enumerate(lines):
             for y, thischar in enumerate(thisline.split()):
-                self.map[x,y] = CHAR_DICT[thischar]
+                self.map[x, y] = CHAR_DICT[thischar]
 
     def display(self):
         r""" Prints the map to the command prompt
