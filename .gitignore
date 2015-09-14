@@ -1,0 +1,85 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# =========================
+# Operating System Files #
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# =========================
+# Compiled source #
+# =========================
+*.pyc
+
+# =========================
+# LaTeX Files #
+# =========================
+doc/tex/*/*.aux
+doc/tex/*/*.bbl
+doc/tex/*/*.bcf
+doc/tex/*/*.blg
+doc/tex/*/*.dvi
+doc/tex/*/*.gz
+doc/tex/*/*.hst
+doc/tex/*/*.lof
+doc/tex/*/*.log
+doc/tex/*/*.lot
+doc/tex/*/*.out
+doc/tex/*/*.pdf
+doc/tex/*/*.run.xml
+doc/tex/*/*.toc
+doc/tex/*/*.tcp
+doc/tex/*/*.tps
+doc/tex/*/*.ver
+
+# beamer files
+doc/tex/*/*.nav
+doc/tex/*/*.snm
+doc/tex/*/*.vrb
+
+# =========================
+# Folder/Files #
+# =========================
+output/*
+results/*
+scripts/case_*
+scripts/script_*
+temp/*
+tests/.coverage
+tests/coverage_html_report/*
