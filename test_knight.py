@@ -9,7 +9,6 @@ Written by Matt Beck Sept 2015
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
-import copy
 import numpy as np
 import unittest
 import board
@@ -44,32 +43,12 @@ class Test_knight_class(unittest.TestCase):
         b1    = board.Board(self.small_plain)
         cent  = np.array((3, 3), dtype='int')
         k1    = knight.Knight(b1,cent)
+        self.assertTrue((k1.position == cent).all())
         with capture_output() as (out, _):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        out_list = [ each.strip() for each in 
-                      """. . . . . . . .
-                         . . . . . . . .
-                         . . . . . . . .
-                         . . . K . . . .
-                         . . . . . . . .
-                         . . . . . . . .
-                         . . . . . . . .
-                         . . . . . . . .""".split('\n')]
-        expected_out = '\n'.join(out_list)
-        self.assertEqual(my_out, expected_out)        
-
-
-    def test_valid_moves(self):
-        b1    = board.Board(self.small_plain)
-        cent  = np.array((3, 3), dtype='int')
-        k1    = knight.Knight(b1,cent)
-        with capture_output() as (out, _):
-            b1.display()
-        my_out = out.getvalue().strip()
-        out.close()
-        out_list = [ each.strip() for each in 
+        out_list = [ each.strip() for each in
                       """. . . . . . . .
                          . . . . . . . .
                          . . . . . . . .
@@ -80,6 +59,12 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
+
+
+    def test_valid_moves(self):
+        b1    = board.Board(self.small_plain)
+        start = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,start)
         # set move choice
         move_choice = 0
         # determine move validity and cost
@@ -94,7 +79,7 @@ class Test_knight_class(unittest.TestCase):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        out_list = [ each.strip() for each in 
+        out_list = [ each.strip() for each in
                       """. . . . . . . .
                          . . . . . . . .
                          . . . . . . . .
@@ -103,11 +88,51 @@ class Test_knight_class(unittest.TestCase):
                          . . . x K . . .
                          . . . . . . . .
                          . . . . . . . .""".split('\n')]
-        expected_out = '\n'.join(out_list)        
+        expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
 
+    def test_invalid_move(self):
+        r""" test moving off the board """
+        # move off bottom of board
+        b1    = board.Board(self.small_plain)
+        start = np.array((6, 3), dtype='int')
+        k1    = knight.Knight(b1, start)
+        # set move choice
+        move_choice = 0
+        # determine move validity and cost
+        (cost, isvalid) = k1.validate_move(move_choice)
+        self.assertFalse(isvalid)
+        self.assertEqual(cost, 1)
+        
+        # move off right of board
+        start = np.array((3, 6), dtype='int')
+        k1    = knight.Knight(b1, start)
+        # set move choice
+        move_choice = 6
+        # determine move validity and cost
+        (cost, isvalid) = k1.validate_move(move_choice)
+        self.assertFalse(isvalid)
+        self.assertEqual(cost, 1)      
+  
+        # move off top of board
+        start = np.array((1, 6), dtype='int')
+        k1    = knight.Knight(b1, start)
+        # set move choice
+        move_choice = 5
+        # determine move validity and cost
+        (cost, isvalid) = k1.validate_move(move_choice)
+        self.assertFalse(isvalid)
+        self.assertEqual(cost, 1)      
 
-           
+        # move off left of board
+        start = np.array((1, 1), dtype='int')
+        k1    = knight.Knight(b1, start)
+        # set move choice
+        move_choice = 2
+        # determine move validity and cost
+        (cost, isvalid) = k1.validate_move(move_choice)
+        self.assertFalse(isvalid)
+        self.assertEqual(cost, 1)      
 
 if __name__ == '__main__':
     unittest.main(exit=False)

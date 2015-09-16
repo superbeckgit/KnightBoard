@@ -39,7 +39,7 @@ SMALL_BOARD_CHAR = r"""
 #%% Class definitions
 class Knight():
     r""" Knight class
-    
+
     """
     valid_moves = dict()
     valid_moves[0] = [(1, 0), (1, 0), (0, 1)]
@@ -54,7 +54,7 @@ class Knight():
     #. . .
     #x x S
     #E . .
-    valid_moves[3] = [(0, -1), (0, -1), (-1, 0)] 
+    valid_moves[3] = [(0, -1), (0, -1), (-1, 0)]
     #E . .
     #x x S
     #. . .
@@ -74,7 +74,7 @@ class Knight():
     #. . .
     #S x x
     #. . E
-    
+
 
     def __init__(self, gboard, position):
         r"""
@@ -92,7 +92,7 @@ class Knight():
 
         Examples
         --------
-        
+
         >>> myboard = board.Board(board.SMALL_BOARD_CHAR)
         >>> myknight = Knight(myboard, np.array((2,3)))
 
@@ -112,9 +112,9 @@ class Knight():
 
         Parameters
         ----------
-        desired_move : enumerated integer 
+        desired_move : enumerated integer
             index into self.valid_moves denoting move choice
-            
+
         Returns
         -------
         cost    : int
@@ -130,9 +130,9 @@ class Knight():
         for ix, step in enumerate(move):
             test_pos += step
             # get step validity and penalty
-            (step_v, step_p) = self.gboard.validate_position(step)
+            (step_v, step_p) = self.gboard.validate_position(test_pos)
             # combine step validity and move validity
-            isValid = isvalid & step_v
+            isvalid = isvalid & step_v
             # add step penalty to move cost
             cost += step_p
         # add standard move cost
@@ -145,7 +145,7 @@ class Knight():
 
         Parameters
         ----------
-        desired_move : enumerated integer 
+        desired_move : enumerated integer
             index into self.valid_moves denoting move choice
 
         """
@@ -162,7 +162,7 @@ class Knight():
         self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
         # update knight position
         self.position = cur_pos
-        
+
 
 
 if __name__ == '__main__':
