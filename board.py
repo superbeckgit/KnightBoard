@@ -139,9 +139,9 @@ W W W W . . . . . . . . . . . B . . . W W W W W W W . . . . . .
 
 #%% Class definitions
 class Board():
-    r""" 
+    r"""
     Board class
-    
+
     Attributes
     ----------
     map
@@ -200,12 +200,12 @@ class Board():
         >>> pos = np.array((1,2))
         >>> myboard.validate_position(pos)
         (True, 0)
-        
+
         """
         penalty = 0
         (x, y)  = position
-        if x >= 0 & x <= self.nCols:
-            if y >= 0 & y <= self.nRows:
+        if (x >= 0) & (x < self.nCols):
+            if (y >= 0) & (y < self.nRows):
                 if self.map[x, y] not in {CHAR_DICT['R'], CHAR_DICT['B'],\
                                               CHAR_DICT['K'], CHAR_DICT['x']}:
                     # square can be occupied, determine move penalty
@@ -214,18 +214,18 @@ class Board():
                     elif self.map[x, y] == CHAR_DICT['L']:
                         penalty = 4
                     else:
-                        # no penalty for normal squares or teleports                 
+                        # no penalty for normal squares or teleports
                         return True, penalty
                 else:
                     # terrain cannot be occupied
-                    return False
+                    return False, penalty
             else:
                 # invalid y coordinate
-                return False
+                return False, penalty
         else:
             # invalid x coordinate
-            return False
-        
+            return False, penalty
+
     def display(self, original=False):
         r""" Prints the map to the command prompt
 
