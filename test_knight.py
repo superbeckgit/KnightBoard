@@ -80,33 +80,16 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
-        move  = k1.valid_moves[0]
-        # initialize move validity and cost
-        isvalid = True
-        cost    = 0
-        test_pos = copy.deepcopy(k1.position)
-        for ix, step in enumerate(move):
-            test_pos += step
-            # get step validity and penalty
-            (step_v, step_p) = b1.validate_position(step)
-            # combine step validity and move validity
-            isValid = isvalid & step_v
-            # add step penalty to move cost
-            cost += step_p
-        # add standard move cost
-        cost += 1
+        # set move choice
+        move_choice = 0
+        # determine move validity and cost
+        (cost, isvalid) = k1.validate_move(move_choice)
         self.assertTrue(isvalid)
         self.assertEqual(cost, 1)
-        self.assertTrue((test_pos == np.array((5, 4), dtype='int')).all())
         # change the board layout to reflect the move
-        cur_pos = copy.deepcopy(k1.position)
-        b1.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['S']
-        for ix, step in enumerate(move):
-            cur_pos += step
-            b1.map[cur_pos[0], cur_pos[1]] =board.CHAR_DICT['x']
-        # update knight position
-        k1.position = cur_pos
-        b1.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
+        k1.execute_move(move_choice)
+        self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
+        # confirm state of board
         with capture_output() as (out, _):
             b1.display()
         my_out = out.getvalue().strip()
@@ -122,6 +105,7 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)        
         self.assertEqual(my_out, expected_out)
+
 
            
 

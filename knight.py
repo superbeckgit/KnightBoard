@@ -15,6 +15,7 @@ Written by Matt Beck Sept 2015
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
+import copy
 import doctest
 import numpy as np
 import board
@@ -114,8 +115,54 @@ class Knight():
         desired_move : enumerated integer 
             index into self.valid_moves denoting move choice
             
+        Returns
+        -------
+        cost    : int
+            Total cost of move if executed
+        isvalid : bool
+            True if move is valid (allowed to happen)
+        """
+        move  = self.valid_moves[desired_move]
+        # initialize move validity and cost
+        isvalid = True
+        cost    = 0
+        test_pos = copy.deepcopy(self.position)
+        for ix, step in enumerate(move):
+            test_pos += step
+            # get step validity and penalty
+            (step_v, step_p) = self.gboard.validate_position(step)
+            # combine step validity and move validity
+            isValid = isvalid & step_v
+            # add step penalty to move cost
+            cost += step_p
+        # add standard move cost
+        cost += 1
+        return cost, isvalid
+
+    def execute_move(self, desired_move):
+        r"""
+        Move the knight based on the move requested
+
+        Parameters
+        ----------
+        desired_move : enumerated integer 
+            index into self.valid_moves denoting move choice
 
         """
+        # determine move validity and cost of move
+        (cost, isvalid) = self.validate_move(desired_move)
+        # get step list for move
+        steplist = self.valid_moves[desired_move]
+        # change the board layout to reflect the move
+        cur_pos = copy.deepcopy(self.position)
+        self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['S']
+        for ix, step in enumerate(steplist):
+            cur_pos += step
+            self.gboard.map[cur_pos[0], cur_pos[1]] =board.CHAR_DICT['x']
+        self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
+        # update knight position
+        self.position = cur_pos
+        
 
 
 if __name__ == '__main__':
