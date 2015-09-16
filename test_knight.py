@@ -9,6 +9,7 @@ Written by Matt Beck Sept 2015
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
+import copy
 import numpy as np
 import unittest
 import board
@@ -26,41 +27,99 @@ class Test_knight_class(unittest.TestCase):
         illegal big move
     """
     def setUp(self):
-        r""" make board layouts """
-        # all chars manually
-        self.goodlayout1 = r"""
-        W R B S E
-        K x T L .
-        """
-        # all chars automatically
-        self.goodlayout2 = ' '.join(board.CHAR_DICT.keys())
-        # bad char
-        self.badcharlayout1 = r"""
-        . Z
-        . .
-        """
-        # no chars
-        self.emptylayout2 = r""" """
+        r""" make board layout """
+        self.small_plain =  r"""
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            """
 
-    def test_good_board_inits(self):
-        board.Board(self.goodlayout1)
-        board.Board(self.goodlayout2)
-        self.assertTrue(True)
-
-    def test_bad_board_init(self):
-        with self.assertRaises(KeyError):
-            board.Board(self.badcharlayout1)
-        with self.assertRaises(IndexError):
-            board.Board(self.emptylayout2)
-
-    def test_good_board_display(self):
-        b1 = board.Board(self.goodlayout1)
+    def test_good_knight_init(self):
+        r""" initialize knight in valid location/terrain """
+        b1    = board.Board(self.small_plain)
+        cent  = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,cent)
         with capture_output() as (out, _):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        expected_out = 'W R B S E\nK x T L .'
+        out_list = [ each.strip() for each in """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . K . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
+        self.assertEqual(my_out, expected_out)        
+
+
+    def test_valid_moves(self):
+        b1    = board.Board(self.small_plain)
+        cent  = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,cent)
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        out_list = [ each.strip() for each in """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . K . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
+        move  = k1.valid_moves[0]
+        # initialize move validity and cost
+        isvalid = True
+        cost    = 0
+        test_pos = copy.deepcopy(k1.position)
+        for ix, step in enumerate(move):
+            test_pos += step
+            # get step validity and penalty
+            (step_v, step_p) = b1.validate_position(step)
+            # combine step validity and move validity
+            isValid = isvalid & step_v
+            # add step penalty to move cost
+            cost += step_p
+        # add standard move cost
+        cost += 1
+        self.assertTrue(isvalid)
+        self.assertEqual(cost, 1)
+        self.assertTrue((test_pos == np.array((5, 4), dtype='int')).all())
+        # change the board layout to reflect the move
+        cur_pos = copy.deepcopy(k1.position)
+        b1.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['S']
+        for ix, step in enumerate(move):
+            cur_pos += step
+            b1.map[cur_pos[0], cur_pos[1]] =board.CHAR_DICT['x']
+        # update knight position
+        k1.position = cur_pos
+        b1.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        expected_out = """. . . . . . . .
+. . . . . . . .
+. . . . . . . .
+. . . S . . . .
+. . . x . . . .
+. . . x K . . .
+. . . . . . . .
+. . . . . . . ."""
+        self.assertEqual(my_out, expected_out)
+
+           
 
 if __name__ == '__main__':
     unittest.main(exit=False)
