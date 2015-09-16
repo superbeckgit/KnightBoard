@@ -1,19 +1,22 @@
+#!/home/mbeck/anaconda/bin/python
 # -*- coding: utf-8 -*-
 r"""
-Test file for board class
+Test file for knight class
 
 Written by Matt Beck Sept 2015
 """
 
+from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
 import numpy as np
 import unittest
 import board
-from dstauffman import capture_output
+import knight
+from dcstools import capture_output
 
 #%%
-class Test_board_class(unittest.TestCase):
+class Test_knight_class(unittest.TestCase):
     r"""
     Tests validate_move function with following inputs:
         all valid moves [TBD]
@@ -42,12 +45,13 @@ class Test_board_class(unittest.TestCase):
     def test_good_board_inits(self):
         board.Board(self.goodlayout1)
         board.Board(self.goodlayout2)
-        board.Board(self.emptylayout2)
         self.assertTrue(True)
 
     def test_bad_board_init(self):
         with self.assertRaises(KeyError):
             board.Board(self.badcharlayout1)
+        with self.assertRaises(IndexError):
+            board.Board(self.emptylayout2)
 
     def test_good_board_display(self):
         b1 = board.Board(self.goodlayout1)
@@ -55,7 +59,7 @@ class Test_board_class(unittest.TestCase):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        expected_out = self.goodlayout1
+        expected_out = 'W R B S E\nK x T L .'
         self.assertEqual(my_out, expected_out)
 
 if __name__ == '__main__':
