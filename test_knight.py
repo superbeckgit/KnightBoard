@@ -48,7 +48,8 @@ class Test_knight_class(unittest.TestCase):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        out_list = [ each.strip() for each in """. . . . . . . .
+        out_list = [ each.strip() for each in 
+                      """. . . . . . . .
                          . . . . . . . .
                          . . . . . . . .
                          . . . K . . . .
@@ -68,7 +69,8 @@ class Test_knight_class(unittest.TestCase):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        out_list = [ each.strip() for each in """. . . . . . . .
+        out_list = [ each.strip() for each in 
+                      """. . . . . . . .
                          . . . . . . . .
                          . . . . . . . .
                          . . . K . . . .
@@ -109,14 +111,16 @@ class Test_knight_class(unittest.TestCase):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        expected_out = """. . . . . . . .
-. . . . . . . .
-. . . . . . . .
-. . . S . . . .
-. . . x . . . .
-. . . x K . . .
-. . . . . . . .
-. . . . . . . ."""
+        out_list = [ each.strip() for each in 
+                      """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . S . . . .
+                         . . . x . . . .
+                         . . . x K . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)        
         self.assertEqual(my_out, expected_out)
 
            
