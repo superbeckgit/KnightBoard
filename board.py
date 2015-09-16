@@ -1,3 +1,4 @@
+#!/home/mbeck/anaconda/bin/python
 # -*- coding: utf-8 -*-
 r"""
 Knight board program:
@@ -78,10 +79,12 @@ Level 5 [HARD]: Compute the longest sequence of moves to complete Level 3 withou
 
 
 #%% imports
+from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
 import doctest
 import numpy as np
+import copy
 
 
 #%% GLOBALS
@@ -90,9 +93,9 @@ VALU_DICT = {value:key for (key,value) in CHAR_DICT.items()}
 SMALL_BOARD_CHAR = r"""
 . . . . . . . .
 . . . . . . . .
-. S . . . . . .
 . . . . . . . .
-. . . . . E . .
+. . . . . . . .
+. . . . . . . .
 . . . . . . . .
 . . . . . . . .
 . . . . . . . .
@@ -136,7 +139,17 @@ W W W W . . . . . . . . . . . B . . . W W W W W W W . . . . . .
 
 #%% Class definitions
 class Board():
-    r""" Board class with map and display functions """
+    r""" 
+    Board class
+    
+    Attributes
+    ----------
+    map
+    nCols
+    nRows
+    original
+
+    """
 
     def __init__(self, layout):
         r"""
@@ -164,8 +177,56 @@ class Board():
         for x, thisline in enumerate(lines):
             for y, thischar in enumerate(thisline.split()):
                 self.map[x,y] = CHAR_DICT[thischar]
+        self.original = copy.deepcopy(self.map)
 
-    def display(self):
+    def validate_position(self, position):
+        r"""
+        Determines if position is within board bounds
+
+        Parameters
+        ----------
+        position : (1,2) ndarray integer
+            desired board coordinates
+
+        Returns
+        -------
+        bool
+            True if within board, False if outside board
+
+        Examples
+        --------
+
+        >>> myboard = Board(SMALL_BOARD_CHAR)
+        >>> pos = np.array((1,2))
+        >>> myboard.validate_position(pos)
+        (True, 0)
+        
+        """
+        penalty = 0
+        (x, y)  = position
+        if x >= 0 & x <= self.nCols:
+            if y >= 0 & y <= self.nRows:
+                if self.map[x, y] not in {CHAR_DICT['R'], CHAR_DICT['B'],\
+                                              CHAR_DICT['K'], CHAR_DICT['x']}:
+                    # square can be occupied, determine move penalty
+                    if self.map[x, y] == CHAR_DICT['W']:
+                        penalty = 1
+                    elif self.map[x, y] == CHAR_DICT['L']:
+                        penalty = 4
+                    else:
+                        # no penalty for normal squares or teleports                 
+                        return True, penalty
+                else:
+                    # terrain cannot be occupied
+                    return False
+            else:
+                # invalid y coordinate
+                return False
+        else:
+            # invalid x coordinate
+            return False
+        
+    def display(self, original=False):
         r""" Prints the map to the command prompt
 
         Examples
@@ -175,15 +236,19 @@ class Board():
         >>> myboard.display()
         . . . . . . . .
         . . . . . . . .
-        . S . . . . . .
         . . . . . . . .
-        . . . . . E . .
+        . . . . . . . .
+        . . . . . . . .
         . . . . . . . .
         . . . . . . . .
         . . . . . . . .
 
         """
-        for row in self.map:
+        if original:
+            map = self.original
+        else:
+            map = self.map
+        for row in map:
             for ix, each in enumerate(row):
                 # add pad space character except on last character
                 if ix != len(row)-1:
