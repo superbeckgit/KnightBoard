@@ -41,35 +41,35 @@ class Knight():
     
     """
     valid_moves = dict()
-    valid_moves[0] = (2,1)
+    valid_moves[0] = [(1, 0), (1, 0), (0, 1)]
     #. S .
     #. x .
     #. x E
-    valid_moves[1] = (2,-1)
+    valid_moves[1] = [(1, 0), (1, 0), (0, -1)]
     #. S .
     #. x .
     #E x .
-    valid_moves[2] = (1,-2)
+    valid_moves[2] = [(0, -1), (0, -1), (1, 0)]
     #. . .
     #x x S
     #E . .
-    valid_moves[3] = (-1,-2)
+    valid_moves[3] = [(0, -1), (0, -1), (-1, 0)] 
     #E . .
     #x x S
     #. . .
-    valid_moves[4] = (-2,-1)
+    valid_moves[4] = [(-1, 0), (-1, 0), (0, -1)]
     #E x .
     #. x .
     #. S .
-    valid_moves[5] = (2,-1)
+    valid_moves[5] = [(-1, 0), (-1, 0), (0, 1)]
     #. x E
     #. x .
     #. S .
-    valid_moves[6] = (2,-1)
+    valid_moves[6] = [(0, 1), (0, 1), (0, -1)]
     #. . E
     #S x x
     #. . .
-    valid_moves[7] = (2,1)
+    valid_moves[7] = [(0, 1), (0, 1), (1, 0)]
     #. . .
     #S x x
     #. . E
