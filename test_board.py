@@ -1,3 +1,4 @@
+#!/home/mbeck/anaconda/bin/python
 # -*- coding: utf-8 -*-
 r"""
 Test file for board class
@@ -5,12 +6,13 @@ Test file for board class
 Written by Matt Beck Sept 2015
 """
 
+from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
 import numpy as np
 import unittest
 import board
-from dstauffman.utils import capture_output
+from dcstools.utils import capture_output
 
 #%%
 class Test_board_class(unittest.TestCase):
