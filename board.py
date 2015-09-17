@@ -206,7 +206,8 @@ class Board():
         (x, y)  = position
         if (x >= 0) & (x < self.nCols):
             if (y >= 0) & (y < self.nRows):
-                if self.map[x,y] not in {CHAR_DICT['B'], CHAR_DICT['K'], CHAR_DICT['x']}:
+                if self.map[x,y] not in {CHAR_DICT['B'], CHAR_DICT['K'],
+                                         CHAR_DICT['x'], CHAR_DICT['S']}:
                     # square can be occupied, determine move penalty
                     if self.map[x, y] == CHAR_DICT['W']:
                         penalty = 1
