@@ -107,13 +107,15 @@ class Knight():
             raise Exception('invalid starting position')
 
 
-    def validate_move(self, desired_move):
+    def validate_move(self, desired_move, isstrict=False):
         r""" Determine if move is valid
 
         Parameters
         ----------
         desired_move : enumerated integer
             index into self.valid_moves denoting move choice
+        isstrict     : bool (optional)
+            denotes if board.validate_position should use strict mode
 
         Returns
         -------
@@ -127,14 +129,16 @@ class Knight():
         isvalid = True
         cost    = 0
         test_pos = copy.deepcopy(self.position)
+        myboard = self.gboard
         for ix, step in enumerate(move):
             test_pos += step
             if ix < len(move)-1:
                 # get step validity for passover squares (ignore penalty)
-                (step_v, _) = self.gboard.validate_position(test_pos)
+                (step_v, _) = myboard.validate_position(test_pos, strict=isstrict)
             if ix == len(move)-1:
                 # get step validity and penalty for landing square
-                (step_v, step_p) = self.gboard.validate_position(test_pos, landing=True)
+                (step_v, step_p) = myboard.validate_position(test_pos, landing=True,
+                                                             strict=isstrict)
                 # add step penalty to move cost
                 cost += step_p
             # combine step validity and move validity
@@ -143,7 +147,7 @@ class Knight():
         cost += 1
         return cost, isvalid
 
-    def execute_move(self, desired_move):
+    def execute_move(self, desired_move, **kargs):
         r"""
         Move the knight based on the move requested
 
@@ -151,10 +155,14 @@ class Knight():
         ----------
         desired_move : enumerated integer
             index into self.valid_moves denoting move choice
+        **kargs      : dict
+            capture strict settings to be passed through to validate_pos
 
         """
+        # handle extra input
+        bestrict = kargs.get('strict',False)
         # determine move validity and cost of move
-        (cost, isvalid) = self.validate_move(desired_move)
+        (cost, isvalid) = self.validate_move(desired_move, isstrict=bestrict)
         if isvalid:
             # get step list for move
             steplist = self.valid_moves[desired_move]
