@@ -433,7 +433,7 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
-        
+
     def test_move_over_past(self):
         r""" show you cant pass over a previously occupied space based on board.map """
         b1    = board.Board(self.small_plain)
@@ -486,6 +486,50 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
+
+    def test_valid_sequence(self):
+        r""" tests a valid sequence of moves """
+        b1    = board.Board(self.small_plain)
+        start = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,start)
+        # set move sequence
+        move_seq = [0, 5, 6, 3, 2]
+        # check sequence validity
+        (cost, valid) = k1.validate_sequence(move_seq)
+        self.assertTrue(valid)
+        self.assertEqual(cost, len(move_seq))
+        # change the board layout to reflect the move
+        for each in move_seq:
+            k1.execute_move(each)
+        #self.assertTrue((k1.position == np.array((2, 3), dtype='int')).all())
+        # confirm state of board
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        out_list = [ each.strip() for each in
+                      """. . . . . . . .
+                         . . . x x S . .
+                         . . . K . x x S
+                         . . . S x S x x
+                         . . . x x . . .
+                         . . . x S . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
+        self.assertEqual(my_out, expected_out)
+
+    def test_invalid_sequence(self):
+        r""" tests an invalid sequence of moves """
+        b1    = board.Board(self.small_plain)
+        start = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,start)
+        # set move sequence
+        move_seq = [0, 5, 6, 6, 3, 2]
+        # check sequence validity
+        (cost, valid) = k1.validate_sequence(move_seq)
+        self.assertFalse(valid)
+        self.assertEqual(cost, 0)
 
 
 if __name__ == '__main__':

@@ -107,7 +107,7 @@ class Knight():
             raise Exception('invalid starting position')
 
 
-    def validate_move(self, desired_move, isstrict=False):
+    def validate_move(self, desired_move, **kargs):
         r""" Determine if move is valid
 
         Parameters
@@ -124,6 +124,8 @@ class Knight():
         isvalid : bool
             True if move is valid (allowed to happen)
         """
+        # handle extra input
+        bestrict = kargs.get('strict',False)
         move  = self.valid_moves[desired_move]
         # initialize move validity and cost
         isvalid = True
@@ -134,11 +136,11 @@ class Knight():
             test_pos += step
             if ix < len(move)-1:
                 # get step validity for passover squares (ignore penalty)
-                (step_v, _) = myboard.validate_position(test_pos, strict=isstrict)
+                (step_v, _) = myboard.validate_position(test_pos, strict=bestrict)
             if ix == len(move)-1:
                 # get step validity and penalty for landing square
                 (step_v, step_p) = myboard.validate_position(test_pos, landing=True,
-                                                             strict=isstrict)
+                                                             strict=bestrict)
                 # add step penalty to move cost
                 cost += step_p
             # combine step validity and move validity
@@ -146,6 +148,48 @@ class Knight():
         # add standard move cost
         cost += 1
         return cost, isvalid
+
+    def validate_sequence(self, movelist, **kargs):
+        r"""
+        Validate a sequence of moves for validity
+
+        Parameters
+        ----------
+        movelist : [1xN] of int enums from {0:7} valid move list
+        strict   : bool (otional)
+            denotes if board.validate_position should use strict mode
+
+        Returns
+        -------
+        totcost  : int
+            Total cost of all moves if executed
+        allvalid : bool
+            True if all moves are valid (allowed to happen)
+
+        """
+        # handle extra input
+        bestrict = kargs.get('strict',False)
+        # initialize status vars
+        allvalid = True
+        totcost  = 0
+        oldpos   = copy.deepcopy(self.position)
+        oldmap   = copy.deepcopy(self.gboard.map)
+        for each in movelist:
+            #test the move
+            (cost, isvalid) = self.validate_move(each, strict=bestrict)
+            totcost  = cost + totcost
+            allvalid = isvalid and allvalid
+            if isvalid:
+                # good move, execute it
+                self.execute_move(each, strict=bestrict)
+            else:
+                # bad sequence
+                return 0, allvalid
+        # restore old self
+        self.position = oldpos
+        self.gboard.map = oldmap
+        # all good moves
+        return totcost, allvalid
 
     def execute_move(self, desired_move, **kargs):
         r"""
@@ -162,7 +206,7 @@ class Knight():
         # handle extra input
         bestrict = kargs.get('strict',False)
         # determine move validity and cost of move
-        (cost, isvalid) = self.validate_move(desired_move, isstrict=bestrict)
+        (cost, isvalid) = self.validate_move(desired_move, strict=bestrict)
         if isvalid:
             # get step list for move
             steplist = self.valid_moves[desired_move]
