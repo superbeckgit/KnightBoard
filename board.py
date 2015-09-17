@@ -179,7 +179,7 @@ class Board():
                 self.map[x,y] = CHAR_DICT[thischar]
         self.original = copy.deepcopy(self.map)
 
-    def validate_position(self, position, landing=False):
+    def validate_position(self, position, landing=False, strict=False):
         r"""
         Determines if position is within board bounds
 
@@ -187,6 +187,10 @@ class Board():
         ----------
         position : (1,2) ndarray integer
             desired board coordinates
+        landing  : bool (optional, default=False)
+            denotes if square should be evaluated for landing (T) or passing over (F)
+        strict   : bool (optional, default=False)
+            denotes if historic locations are invalid (T) or allowable (F)
 
         Returns
         -------
@@ -204,31 +208,32 @@ class Board():
         """
         penalty = 0
         (x, y)  = position
-        if (x >= 0) & (x < self.nCols):
-            if (y >= 0) & (y < self.nRows):
-                if self.map[x,y] not in {CHAR_DICT['B'], CHAR_DICT['K'],
-                                         CHAR_DICT['x'], CHAR_DICT['S']}:
-                    # square can be occupied, determine move penalty
-                    if self.map[x, y] == CHAR_DICT['W']:
-                        penalty = 1
-                    elif self.map[x, y] == CHAR_DICT['L']:
-                        penalty = 4
-                    elif (self.map[x, y] == CHAR_DICT['R']) & landing:
-                        # special case, cannot land on Rock
-                        return False, penalty
-                    else:
-                        # no penalty for normal squares, Rock (passover), or teleports
-                        pass
-                    return True, penalty
-                else:
-                    # terrain cannot be occupied
-                    return False, penalty
-            else:
-                # invalid y coordinate
-                return False, penalty
-        else:
+        if (x < 0) or (x >= self.nRows):
             # invalid x coordinate
             return False, penalty
+        if (y < 0) or (y >= self.nCols):
+            # invalid y coordinate
+            return False, penalty
+        if self.map[x, y] == CHAR_DICT['B']:
+            # terrain cannot be occupied
+            return False, penalty
+        if strict and self.map[x, y] in {CHAR_DICT['K'], CHAR_DICT['x'], CHAR_DICT['S']}:
+            # terrain cannot be occupied in this mode
+            return False, penalty
+        if landing:
+            if self.map[x, y] == CHAR_DICT['W']:
+                # penalty for Water
+                penalty = 1
+            elif self.map[x, y] == CHAR_DICT['L']:
+                #penalty for Lava
+                penalty = 4
+            elif self.map[x, y] == CHAR_DICT['R']:
+                # special case, cannot land on Rock
+                return False, penalty
+            else:
+                # no penalty for normal squares, Rock (passover), or teleports
+                pass
+        return True, penalty
 
     def display(self, original=False):
         r""" Prints the map to the command prompt
