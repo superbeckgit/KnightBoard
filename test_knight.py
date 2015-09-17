@@ -381,6 +381,69 @@ class Test_knight_class(unittest.TestCase):
         self.assertTrue(isvalid)
         self.assertEqual(cost, 1)
 
+    def test_move_onto_past(self):
+        r""" show you cant land on a previously occupied space based on board.map """
+        b1    = board.Board(self.small_plain)
+        start = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,start)
+        # set move choice 0
+        move_choice = 0
+        # change the board layout to reflect the move
+        k1.execute_move(move_choice)
+        self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
+        # try to go back
+        move_choice = 4
+        k1.execute_move(move_choice)
+        # confirm lack of movement
+        self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
+        # confirm state of board
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        out_list = [ each.strip() for each in
+                      """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . S . . . .
+                         . . . x . . . .
+                         . . . x K . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
+        self.assertEqual(my_out, expected_out)
+        
+    def test_move_over_past(self):
+        r""" show you cant pass over a previously occupied space based on board.map """
+        b1    = board.Board(self.small_plain)
+        start = np.array((3, 3), dtype='int')
+        k1    = knight.Knight(b1,start)
+        # set move choice 0
+        move_choice = 0
+        # change the board layout to reflect the move
+        k1.execute_move(move_choice)
+        self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
+        # try to go back
+        move_choice = 3
+        k1.execute_move(move_choice)
+        # confirm lack of movement
+        self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
+        # confirm state of board
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        out_list = [ each.strip() for each in
+                      """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . S . . . .
+                         . . . x . . . .
+                         . . . x K . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
+        self.assertEqual(my_out, expected_out)
 
 if __name__ == '__main__':
     unittest.main(exit=False)
