@@ -391,9 +391,9 @@ class Test_knight_class(unittest.TestCase):
         # change the board layout to reflect the move
         k1.execute_move(move_choice)
         self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
-        # try to go back
+        # try to go back in strict mode (fail)
         move_choice = 4
-        k1.execute_move(move_choice)
+        k1.execute_move(move_choice, strict=True)
         # confirm lack of movement
         self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
         # confirm state of board
@@ -408,6 +408,27 @@ class Test_knight_class(unittest.TestCase):
                          . . . S . . . .
                          . . . x . . . .
                          . . . x K . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
+        self.assertEqual(my_out, expected_out)
+        # try to go back without strict mode
+        move_choice = 4
+        k1.execute_move(move_choice)
+        # confirm lack of movement
+        self.assertTrue((k1.position == np.array((3, 3), dtype='int')).all())
+        # confirm state of board
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        out_list = [ each.strip() for each in
+                      """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . K x . . .
+                         . . . x x . . .
+                         . . . x S . . .
                          . . . . . . . .
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
@@ -423,9 +444,9 @@ class Test_knight_class(unittest.TestCase):
         # change the board layout to reflect the move
         k1.execute_move(move_choice)
         self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
-        # try to go back
+        # try to go back in strict mode (fail)
         move_choice = 3
-        k1.execute_move(move_choice)
+        k1.execute_move(move_choice, strict=True)
         # confirm lack of movement
         self.assertTrue((k1.position == np.array((5, 4), dtype='int')).all())
         # confirm state of board
@@ -444,6 +465,28 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
+        # try to go back without strict mode
+        move_choice = 3
+        k1.execute_move(move_choice, strict=False)
+        # confirm lack of movement
+        self.assertTrue((k1.position == np.array((4, 2), dtype='int')).all())
+        # confirm state of board
+        with capture_output() as (out, _):
+            b1.display()
+        my_out = out.getvalue().strip()
+        out.close()
+        out_list = [ each.strip() for each in
+                      """. . . . . . . .
+                         . . . . . . . .
+                         . . . . . . . .
+                         . . . S . . . .
+                         . . K x . . . .
+                         . . x x S . . .
+                         . . . . . . . .
+                         . . . . . . . .""".split('\n')]
+        expected_out = '\n'.join(out_list)
+        self.assertEqual(my_out, expected_out)
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)
