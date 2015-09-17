@@ -155,17 +155,18 @@ class Knight():
         """
         # determine move validity and cost of move
         (cost, isvalid) = self.validate_move(desired_move)
-        # get step list for move
-        steplist = self.valid_moves[desired_move]
-        # change the board layout to reflect the move
-        cur_pos = copy.deepcopy(self.position)
-        self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['S']
-        for ix, step in enumerate(steplist):
-            cur_pos += step
-            self.gboard.map[cur_pos[0], cur_pos[1]] =board.CHAR_DICT['x']
-        self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
-        # update knight position
-        self.position = cur_pos
+        if isvalid:
+            # get step list for move
+            steplist = self.valid_moves[desired_move]
+            # change the board layout to reflect the move
+            cur_pos = copy.deepcopy(self.position)
+            self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['S']
+            for ix, step in enumerate(steplist):
+                cur_pos += step
+                self.gboard.map[cur_pos[0], cur_pos[1]] =board.CHAR_DICT['x']
+            self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
+            # update knight position
+            self.position = cur_pos
 
 
 
