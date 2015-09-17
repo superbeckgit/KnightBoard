@@ -179,7 +179,7 @@ class Board():
                 self.map[x,y] = CHAR_DICT[thischar]
         self.original = copy.deepcopy(self.map)
 
-    def validate_position(self, position):
+    def validate_position(self, position, landing=False):
         r"""
         Determines if position is within board bounds
 
@@ -206,16 +206,19 @@ class Board():
         (x, y)  = position
         if (x >= 0) & (x < self.nCols):
             if (y >= 0) & (y < self.nRows):
-                if self.map[x, y] not in {CHAR_DICT['R'], CHAR_DICT['B'],\
-                                              CHAR_DICT['K'], CHAR_DICT['x']}:
+                if self.map[x,y] not in {CHAR_DICT['B'], CHAR_DICT['K'], CHAR_DICT['x']}:
                     # square can be occupied, determine move penalty
                     if self.map[x, y] == CHAR_DICT['W']:
                         penalty = 1
                     elif self.map[x, y] == CHAR_DICT['L']:
                         penalty = 4
+                    elif (self.map[x, y] == CHAR_DICT['R']) & landing:
+                        # special case, cannot land on Rock
+                        return False, penalty
                     else:
-                        # no penalty for normal squares or teleports
-                        return True, penalty
+                        # no penalty for normal squares, Rock (passover), or teleports
+                        pass
+                    return True, penalty
                 else:
                     # terrain cannot be occupied
                     return False, penalty
