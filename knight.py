@@ -66,7 +66,7 @@ class Knight():
     #. x E
     #. x .
     #. S .
-    valid_moves[6] = [(0, 1), (0, 1), (0, -1)]
+    valid_moves[6] = [(0, 1), (0, 1), (-1, 0)]
     #. . E
     #S x x
     #. . .
@@ -129,12 +129,16 @@ class Knight():
         test_pos = copy.deepcopy(self.position)
         for ix, step in enumerate(move):
             test_pos += step
-            # get step validity and penalty
-            (step_v, step_p) = self.gboard.validate_position(test_pos)
+            if ix < len(move)-1:
+                # get step validity for passover squares (ignore penalty)
+                (step_v, _) = self.gboard.validate_position(test_pos)
+            if ix == len(move)-1:
+                # get step validity and penalty for landing square
+                (step_v, step_p) = self.gboard.validate_position(test_pos, landing=True)
+                # add step penalty to move cost
+                cost += step_p
             # combine step validity and move validity
             isvalid = isvalid & step_v
-            # add step penalty to move cost
-            cost += step_p
         # add standard move cost
         cost += 1
         return cost, isvalid
