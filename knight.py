@@ -184,7 +184,7 @@ class Knight():
                 self.execute_move(each, strict=bestrict)
             else:
                 # bad sequence
-                return 0, allvalid
+                totcost = 0
         # restore old self
         self.position = oldpos
         self.gboard.map = oldmap
