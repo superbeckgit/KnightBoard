@@ -498,10 +498,11 @@ class Test_knight_class(unittest.TestCase):
         (cost, valid) = k1.validate_sequence(move_seq)
         self.assertTrue(valid)
         self.assertEqual(cost, len(move_seq))
+        self.assertTrue((k1.position == start).all())
         # change the board layout to reflect the move
         for each in move_seq:
             k1.execute_move(each)
-        #self.assertTrue((k1.position == np.array((2, 3), dtype='int')).all())
+        self.assertTrue((k1.position == np.array((2, 3), dtype='int')).all())
         # confirm state of board
         with capture_output() as (out, _):
             b1.display()
