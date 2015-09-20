@@ -1,8 +1,11 @@
+#!/home/mbeck/anaconda/bin/python
 # -*- coding: utf-8 -*-
 r"""
-Game board class for KnightBoard project
-    builds a board based on string layout
-    displays board in command prompt
+Knight board program:
+    validates knight moves
+    finds shortest path from start to end
+    finds longest path from start to end
+    accepts board layouts with penalty terrain
 
 Written by Matt Beck Sept 2015
 
@@ -76,21 +79,23 @@ Level 5 [HARD]: Compute the longest sequence of moves to complete Level 3 withou
 
 
 #%% imports
+from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
 import doctest
 import numpy as np
+import copy
 
 
 #%% GLOBALS
 CHAR_DICT = {'.':0, 'S':1, 'E':2, 'K':3, 'W':4, 'R':5, 'B':6, 'T':7, 'L':8, 'x': 9}
-VALU_DICT = {value:key for (key, value) in CHAR_DICT.items()}
+VALU_DICT = {value:key for (key,value) in CHAR_DICT.items()}
 SMALL_BOARD_CHAR = r"""
 . . . . . . . .
 . . . . . . . .
-. S . . . . . .
 . . . . . . . .
-. . . . . E . .
+. . . . . . . .
+. . . . . . . .
 . . . . . . . .
 . . . . . . . .
 . . . . . . . .
@@ -134,7 +139,17 @@ W W W W . . . . . . . . . . . B . . . W W W W W W W . . . . . .
 
 #%% Class definitions
 class Board():
-    r""" Board class with map and display functions """
+    r"""
+    Board class
+
+    Attributes
+    ----------
+    map
+    nCols
+    nRows
+    original
+
+    """
 
     def __init__(self, layout):
         r"""
@@ -144,32 +159,83 @@ class Board():
         ----------
         layout : (A,B) ndarray
 
-        Attributes
-        ----------
-        map   : (M x N) numpy array of integers denoting space type
-        nCols : int, number of columns in the game board
-        nRows : int, number of rows in the game board
-
         Examples
         --------
         test with the small board layout
         >>> myboard = Board(SMALL_BOARD_CHAR)
 
         """
-        # split layout into rows
+        # split into rows
         lines = layout.strip().split('\n')
         # remove empty rows
         lines = [thisline for thisline in lines if thisline]
-        # determine size and preallocate map np array
+        # preallocate map np array
         self.nRows = len(lines)
         self.nCols = len(lines[0].split())
-        self.map   = np.zeros((self.nRows, self.nCols), dtype=int)
+        self.map = np.zeros((self.nRows,self.nCols),dtype=int)
         # fill the map, x is vertical (down), y is horizontal (right)
         for x, thisline in enumerate(lines):
             for y, thischar in enumerate(thisline.split()):
-                self.map[x, y] = CHAR_DICT[thischar]
+                self.map[x,y] = CHAR_DICT[thischar]
+        self.original = copy.deepcopy(self.map)
 
-    def display(self):
+    def validate_position(self, position, landing=False, strict=False):
+        r"""
+        Determines if position is within board bounds
+
+        Parameters
+        ----------
+        position : (1,2) ndarray integer
+            desired board coordinates
+        landing  : bool (optional, default=False)
+            denotes if square should be evaluated for landing (T) or passing over (F)
+        strict   : bool (optional, default=False)
+            denotes if historic locations are invalid (T) or allowable (F)
+
+        Returns
+        -------
+        bool
+            True if within board, False if outside board
+
+        Examples
+        --------
+
+        >>> myboard = Board(SMALL_BOARD_CHAR)
+        >>> pos = np.array((1,2))
+        >>> myboard.validate_position(pos)
+        (True, 0)
+
+        """
+        penalty = 0
+        (x, y)  = position
+        if (x < 0) or (x >= self.nRows):
+            # invalid x coordinate
+            return False, penalty
+        if (y < 0) or (y >= self.nCols):
+            # invalid y coordinate
+            return False, penalty
+        if self.map[x, y] == CHAR_DICT['B']:
+            # terrain cannot be occupied
+            return False, penalty
+        if strict and self.map[x, y] in {CHAR_DICT['K'], CHAR_DICT['x'], CHAR_DICT['S']}:
+            # terrain cannot be occupied in this mode
+            return False, penalty
+        if landing:
+            if self.map[x, y] == CHAR_DICT['W']:
+                # penalty for Water
+                penalty = 1
+            elif self.map[x, y] == CHAR_DICT['L']:
+                #penalty for Lava
+                penalty = 4
+            elif self.map[x, y] == CHAR_DICT['R']:
+                # special case, cannot land on Rock
+                return False, penalty
+            else:
+                # no penalty for normal squares, Rock (passover), or teleports
+                pass
+        return True, penalty
+
+    def display(self, original=False):
         r""" Prints the map to the command prompt
 
         Examples
@@ -179,15 +245,19 @@ class Board():
         >>> myboard.display()
         . . . . . . . .
         . . . . . . . .
-        . S . . . . . .
         . . . . . . . .
-        . . . . . E . .
+        . . . . . . . .
+        . . . . . . . .
         . . . . . . . .
         . . . . . . . .
         . . . . . . . .
 
         """
-        for row in self.map:
+        if original:
+            map = self.original
+        else:
+            map = self.map
+        for row in map:
             for ix, each in enumerate(row):
                 # add pad space character except on last character
                 if ix != len(row)-1:
