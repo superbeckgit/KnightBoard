@@ -165,6 +165,8 @@ class Knight():
             Total cost of all moves if executed
         allvalid : bool
             True if all moves are valid (allowed to happen)
+        end_loc  : (1,2) ndarray
+            Describes final destination of movelist
 
         """
         # handle extra input
@@ -185,11 +187,13 @@ class Knight():
             else:
                 # bad sequence
                 totcost = 0
+        # store knight end location
+        end_loc = self.position
         # restore old self
         self.position = oldpos
         self.gboard.map = oldmap
         # all good moves
-        return totcost, allvalid
+        return totcost, allvalid, end_loc
 
     def execute_move(self, desired_move, **kargs):
         r"""
