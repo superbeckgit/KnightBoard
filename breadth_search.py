@@ -28,7 +28,7 @@ S . . . . . . .
 . . . . . . . .
 . . . . . . . .
 . . . . . . W .
-. . . . . . . .
+. . . . . L . .
 . . . . . . . E
 """
 
@@ -41,11 +41,14 @@ num_moves = len(k1.valid_moves)
 
 def expand_path(pathlist, num_moves):
     newpathlist = []
-    for ix, path in enumerate(pathlist):
-        for move in range(num_moves):
-            newpath = copy.deepcopy(path)
-            newpath['moves'].append(move)
-            newpathlist.append(newpath)
+    for path in pathlist:
+        if (path['dest'] != goal).all():
+            for move in range(num_moves):
+                newpath = copy.deepcopy(path)
+                newpath['moves'].append(move)
+                newpathlist.append(newpath)
+        else:
+            newpathlist.append(path)
     return newpathlist
 
 def trim_invalid_seq(pathlist):
@@ -57,10 +60,28 @@ def trim_invalid_seq(pathlist):
     newpathlist = [path for path in pathlist if path['valid']==True]
     return newpathlist
 
+def trim_inefficient(pathlist):
+    # build updated dictionary of best cost per destination
+    dest_cost = {}
+    for path in pathlist:
+        thiskey = str(path['dest'])
+        # get cost for this destination
+        cost = dest_cost.get(thiskey)
+        if cost == None or (cost > path['cost']):
+            # no cost known or this path has lower cost than stored
+            # store this cost as best for this destination
+            dest_cost[thiskey] = path['cost']
+        elif cost >= path['cost']:
+            # this destination has already been reached with same or lower cost
+            path['valid'] = False
+    # cull list for only shortest paths to destination
+    newpathlist = [path for path in pathlist if path['cost'] == dest_cost[str(path['dest'])]
+                                                and path['valid'] == True]
+    return newpathlist
+
 def check4winners(pathlist,goal):
     winners = [path for path in pathlist if (path['dest'] == goal).all()]
-    for each in winners:
-        print(str(each['moves']) + ' ' + str(each['cost']))
+    return winners
 
 # build initial pathlist
 path = {}
@@ -71,8 +92,15 @@ path['dest'] = start
 pathlist = [path]
 #trim_invalid_seq(path)
 k1.gboard.display()
-for iter in range(6):
+for iter in range(8):
     pathlist = expand_path(pathlist, num_moves)
     pathlist = trim_invalid_seq(pathlist)
-    # trim for repeated destinations (keep one with lowest cost)
-    check4winners(pathlist, goal)
+    pathlist = trim_inefficient(pathlist)
+    winners  = check4winners(pathlist, goal)
+    if len(winners) > 0 :
+        print('Winning path found at ' + str(iter+1) + ' moves:')
+        print(winners[0])
+        for move in winners[0]['moves']:
+            k1.execute_move(move)
+        k1.gboard.display()
+        break
