@@ -181,7 +181,7 @@ class Knight():
             (cost, isvalid) = self.validate_move(each, strict=bestrict)
             totcost  = cost + totcost
             allvalid = isvalid and allvalid
-            if isvalid:
+            if allvalid:
                 # good move, execute it
                 self.execute_move(each, strict=bestrict)
             else:
