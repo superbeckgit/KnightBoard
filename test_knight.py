@@ -495,7 +495,7 @@ class Test_knight_class(unittest.TestCase):
         # set move sequence
         move_seq = [0, 5, 6, 3, 2]
         # check sequence validity
-        (cost, valid) = k1.validate_sequence(move_seq)
+        (cost, valid, endloc) = k1.validate_sequence(move_seq)
         self.assertTrue(valid)
         self.assertEqual(cost, len(move_seq))
         self.assertTrue((k1.position == start).all())
@@ -528,7 +528,7 @@ class Test_knight_class(unittest.TestCase):
         # set move sequence
         move_seq = [0, 5, 6, 6, 3, 2]
         # check sequence validity
-        (cost, valid) = k1.validate_sequence(move_seq)
+        (cost, valid, endloc) = k1.validate_sequence(move_seq)
         self.assertFalse(valid)
         self.assertEqual(cost, 0)
 
