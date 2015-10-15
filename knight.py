@@ -221,10 +221,16 @@ class Knight():
                 cur_pos += step
                 self.gboard.map[cur_pos[0], cur_pos[1]] =board.CHAR_DICT['x']
             self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
+            # check for transporters
+            beam_ups = [(cur_pos == thisT).all() for thisT in self.gboard.transporters]
+            if True in beam_ups:
+                if (cur_pos == self.gboard.transporters[0]).all():
+                    cur_pos = self.gboard.transporters[1]
+                else:
+                    cur_pos = self.gboard.transporters[0]
+                self.gboard.map[cur_pos[0], cur_pos[1]] = board.CHAR_DICT['K']
             # update knight position
             self.position = cur_pos
-
-
 
 if __name__ == '__main__':
     doctest.testmod(verbose=False)
