@@ -173,10 +173,17 @@ class Board():
         self.nRows = len(lines)
         self.nCols = len(lines[0].split())
         self.map = np.zeros((self.nRows,self.nCols),dtype=int)
+        self.transporters = []
         # fill the map, x is vertical (down), y is horizontal (right)
         for x, thisline in enumerate(lines):
             for y, thischar in enumerate(thisline.split()):
                 self.map[x,y] = CHAR_DICT[thischar]
+                if thischar == 'T':
+                    self.transporters.append(np.array((x,y)))
+        if len(self.transporters) not in {0,2}:
+            print('number of transporter squares is %d' %  len(self.transporters))
+            raise Exception('Board must have 0 or 2 transporter squares')
+
         self.original = copy.deepcopy(self.map)
 
     def validate_position(self, position, landing=False, strict=False):
