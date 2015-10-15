@@ -28,11 +28,13 @@ class Test_board_class(unittest.TestCase):
         r""" make board layouts """
         # all chars manually
         self.goodlayout1 = r"""
-        W R B S E
-        K x T L .
+        W R B S E T
+        K x T L . x
         """
         # all chars automatically
         self.goodlayout2 = ' '.join(board.CHAR_DICT.keys())
+        # add a transportater since they come in pairs
+        self.goodlayout2 += ' T'
         # bad char
         self.badcharlayout1 = r"""
         . Z
@@ -62,7 +64,7 @@ class Test_board_class(unittest.TestCase):
             b1.display()
         my_out = out.getvalue().strip()
         out.close()
-        expected_out = """W R B S E\nK x T L ."""
+        expected_out = """W R B S E T\nK x T L . x"""
         self.assertEqual(my_out, expected_out)
         # test automatic good layout
         b2 = board.Board(self.goodlayout2)
@@ -70,7 +72,7 @@ class Test_board_class(unittest.TestCase):
             b2.display()
         my_out = out.getvalue().strip()
         out.close()
-        expected_out = ' '.join(board.CHAR_DICT.keys())
+        expected_out = ' '.join(board.CHAR_DICT.keys())+' T'
         self.assertEqual(my_out, expected_out)
 
 

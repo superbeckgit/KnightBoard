@@ -38,12 +38,22 @@ class Test_knight_class(unittest.TestCase):
             """
         self.small_ter = r"""
             . . . . . . . .
-            . W . . . . . .
+            . W . . . . T .
             . . R . . . . .
             . . . B . . . .
             . . . . T . . .
             . . . . . L . .
             . . . . . . . .
+            """
+        self.small_wall_trans= r"""
+            S . . . . . . T
+            . . . . . . . .
+            . . . . . . . .
+            B B B B B B B B
+            . . . . . . . .
+            . . . . . . W .
+            . . . . . L . .
+            T . . . . . . E
             """
 
     def test_good_knight_init(self):
