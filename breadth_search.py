@@ -32,8 +32,8 @@ S . . . . . . .
 . . . . . . . E
 """
 
-start = np.array((0, 27), dtype='int')
-goal  = np.array((27, 27), dtype='int')
+start = np.array((18, 23), dtype='int')
+goal  = np.array((20, 29), dtype='int')
 
 b1 = board.Board(board.LARGE_BOARD_CHAR)
 k1 = knight.Knight(b1, start)
