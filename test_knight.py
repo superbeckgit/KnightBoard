@@ -46,14 +46,14 @@ class Test_knight_class(unittest.TestCase):
             . . . . . . . .
             """
         self.small_wall_trans= r"""
-            S . . . . . . T
+            . . . . . . . T
             . . . . . . . .
             . . . . . . . .
             B B B B B B B B
             . . . . . . . .
             . . . . . . W .
-            . . . . . L . .
-            T . . . . . . E
+            . T . . . L . .
+            . . . . . . . .
             """
 
     def test_good_knight_init(self):
@@ -529,6 +529,19 @@ class Test_knight_class(unittest.TestCase):
                          . . . . . . . .""".split('\n')]
         expected_out = '\n'.join(out_list)
         self.assertEqual(my_out, expected_out)
+
+    def test_move_onto_transporters(self):
+        b1    = board.Board(self.small_wall_trans)
+        start = np.array((1,5), dtype='int')
+        k1    = knight.Knight(b1, start)
+        # move onto top right T, end on bottom left
+        k1.execute_move(6)
+        self.assertTrue((k1.position == np.array((6,1), dtype='int')).all())
+        # move onto bottom left T, end on top right
+        start = np.array((7,3), dtype='int')
+        k1    = knight.Knight(b1, start)
+        k1.execute_move(3)
+        self.assertTrue((k1.position == np.array((0,7), dtype='int')).all())
 
     def test_invalid_sequence(self):
         r""" tests an invalid sequence of moves """
