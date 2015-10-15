@@ -32,17 +32,17 @@ S . . . . . . .
 . . . . . . . E
 """
 
-start = np.array((0, 0), dtype='int')
-goal  = np.array((7, 7), dtype='int')
+start = np.array((0, 27), dtype='int')
+goal  = np.array((27, 27), dtype='int')
 
-b1 = board.Board(SMALL_BOARD_CHAR)
+b1 = board.Board(board.LARGE_BOARD_CHAR)
 k1 = knight.Knight(b1, start)
 num_moves = len(k1.valid_moves)
 
 def expand_path(pathlist, num_moves):
     newpathlist = []
     for path in pathlist:
-        if (path['dest'] != goal).all():
+        if not (path['dest'] == goal).all():
             for move in range(num_moves):
                 newpath = copy.deepcopy(path)
                 newpath['moves'].append(move)
@@ -92,7 +92,7 @@ path['dest'] = start
 pathlist = [path]
 #trim_invalid_seq(path)
 k1.gboard.display()
-for iter in range(8):
+for iter in range(30):
     pathlist = expand_path(pathlist, num_moves)
     pathlist = trim_invalid_seq(pathlist)
     pathlist = trim_inefficient(pathlist)
